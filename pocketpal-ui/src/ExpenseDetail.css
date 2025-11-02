@@ -1,0 +1,170 @@
+.detail-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.detail-page-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  background: none;
+  border: 1px solid #c9d4e8;
+  color: #334968;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.back-button:hover {
+  background: #f0f4fb;
+  border-color: #4c72d6;
+  color: #4c72d6;
+  transform: translateX(-3px);
+}
+
+.detail-page-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.detail-page-title h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  color: #071d49;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(7, 29, 73, 0.08);
+  overflow: hidden;
+}
+
+.detail-section {
+  padding: 2rem;
+  border-bottom: 1px solid #e5e9f2;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+}
+
+.detail-section h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  color: #677b9f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-label {
+  font-size: 0.85rem;
+  color: #677b9f;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  color: #071d49;
+  font-weight: 500;
+}
+
+.detail-value.amount {
+  font-size: 1.8rem;
+  color: #4c72d6;
+  font-weight: 700;
+}
+
+.detail-value.receipt-file {
+  font-family: monospace;
+  background: #f0f4fb;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.notes-content {
+  background: #f8faff;
+  padding: 1.25rem;
+  border-radius: 10px;
+  border-left: 4px solid #4c72d6;
+}
+
+.notes-content p {
+  margin: 0;
+  color: #334968;
+  line-height: 1.6;
+}
+
+.detail-not-found {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.detail-not-found h2 {
+  font-size: 2rem;
+  color: #071d49;
+  margin: 0 0 1rem 0;
+}
+
+.detail-not-found p {
+  color: #677b9f;
+  margin: 0 0 2rem 0;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 640px) {
+  .detail-page {
+    padding: 1rem;
+  }
+
+  .detail-page-title h1 {
+    font-size: 1.75rem;
+  }
+
+  .detail-section {
+    padding: 1.5rem;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .detail-value.amount {
+    font-size: 1.5rem;
+  }
+}
