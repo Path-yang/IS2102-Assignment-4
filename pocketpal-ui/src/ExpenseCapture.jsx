@@ -75,6 +75,8 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   const [status, setStatus] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [extractedSummary, setExtractedSummary] = useState(null)
+  const [showReview, setShowReview] = useState(false)
+  const [reviewData, setReviewData] = useState(null)
   const extractionTimer = useRef(null)
 
   useEffect(() => {
@@ -85,14 +87,14 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     }
   }, [])
 
-  const totals = useMemo(() => {
-    const amount = Number.parseFloat(formData.amount) || 0
+  const reviewTotals = useMemo(() => {
+    const amount = reviewData ? Number.parseFloat(reviewData.amount) || 0 : 0
 
     return {
       amount: amount.toFixed(2),
       total: amount.toFixed(2),
     }
-  }, [formData.amount])
+  }, [reviewData])
 
   const handleModeChange = (nextMode) => {
     if (nextMode === mode) return
@@ -101,6 +103,8 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     setReceiptFileName('')
     setStatus(null)
     setExtractedSummary(null)
+    setShowReview(false)
+    setReviewData(null)
   }
 
   const handleReceiptUpload = (event) => {
@@ -128,6 +132,7 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
         amount: mockData.amount,
         category: mockData.category,
       })
+      setShowReview(false)
       setIsProcessing(false)
       setStatus({
         type: 'success',
@@ -139,6 +144,7 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   const handleInputChange = (event) => {
     const { name, value } = event.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    setShowReview(false)
   }
 
   const handleSaveExpense = () => {
@@ -168,28 +174,27 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
       ...formData,
       amount: normalizedAmount.toFixed(2),
     }
+    setReviewData(expenseRecord)
+    setShowReview(true)
+    setStatus({
+      type: 'success',
+      message: 'Review generated. Confirm submission to save the expense.',
+    })
+  }
 
-    setSavedExpenses((prev) => [expenseRecord, ...prev])
+  const handleConfirmExpense = () => {
+    if (!reviewData) return
 
-    // Navigate to confirmation screen with expense data
-    navigate('/confirmation', { state: { expense: expenseRecord } })
+    setSavedExpenses((prev) => [reviewData, ...prev])
+    navigate('/confirmation', { state: { expense: reviewData } })
 
     setFormData({ ...blankForm })
     setReceiptFileName('')
     setExtractedSummary(null)
+    setReviewData(null)
+    setShowReview(false)
     setStatus(null)
   }
-
-  const hasFormData = useMemo(() => {
-    return (
-      formData.merchant ||
-      formData.amount ||
-      formData.date ||
-      formData.category ||
-      formData.paymentMethod ||
-      formData.notes
-    )
-  }, [formData])
 
   return (
     <div className="app-shell">
@@ -348,41 +353,41 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
           </div>
         </div>
 
-        <aside className="secondary-column">
-          {hasFormData && (
+        {showReview && reviewData && (
+          <aside className="secondary-column">
             <div className="card review-card">
               <div className="card-header">
                 <h2>Review</h2>
-                <span className="card-subtitle">Current entry</span>
+                <span className="card-subtitle">Ready to confirm</span>
               </div>
               <dl className="review-details">
                 <div>
                   <dt>Merchant</dt>
-                  <dd>{formData.merchant || '--'}</dd>
+                  <dd>{reviewData.merchant || '--'}</dd>
                 </div>
                 <div>
                   <dt>Amount</dt>
-                  <dd>SGD {totals.amount}</dd>
+                  <dd>SGD {reviewTotals.amount}</dd>
                 </div>
                 <div>
                   <dt>Total</dt>
-                  <dd>SGD {totals.total}</dd>
+                  <dd>SGD {reviewTotals.total}</dd>
                 </div>
                 <div>
                   <dt>Date</dt>
-                  <dd>{formData.date || '--'}</dd>
+                  <dd>{reviewData.date || '--'}</dd>
                 </div>
                 <div>
                   <dt>Category</dt>
-                  <dd>{formData.category || 'Awaiting selection'}</dd>
+                  <dd>{reviewData.category || 'Awaiting selection'}</dd>
                 </div>
                 <div>
                   <dt>Payment method</dt>
-                  <dd>{formData.paymentMethod || 'Not provided'}</dd>
+                  <dd>{reviewData.paymentMethod || 'Not provided'}</dd>
                 </div>
                 <div>
                   <dt>Notes</dt>
-                  <dd>{formData.notes || 'Add context for approvers'}</dd>
+                  <dd>{reviewData.notes || 'Add context for approvers'}</dd>
                 </div>
               </dl>
               {mode === MODES.SCAN && extractedSummary && (
@@ -395,9 +400,12 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
                   </ul>
                 </div>
               )}
+              <button className="save-button" type="button" onClick={handleConfirmExpense}>
+                Confirm submission
+              </button>
             </div>
-          )}
-        </aside>
+          </aside>
+        )}
       </section>
     </div>
   )
