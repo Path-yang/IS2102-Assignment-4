@@ -248,23 +248,12 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
               )}
             </div>
 
-            {mode === MODES.SCAN ? (
+            {mode === MODES.SCAN && (
               <div className="scan-dropzone">
                 <label className="file-input">
                   <input type="file" accept="image/*" onChange={handleReceiptUpload} />
                   <span>Upload or snap receipt image</span>
                 </label>
-                <p>
-                  System checks camera permissions, queues the image, and keeps a local copy until
-                  upload succeeds.
-                </p>
-              </div>
-            ) : (
-              <div className="manual-guidance">
-                <p>
-                  Capture expenses without a receipt or when OCR fails. Required fields are merchant,
-                  amount, and date.
-                </p>
               </div>
             )}
 
