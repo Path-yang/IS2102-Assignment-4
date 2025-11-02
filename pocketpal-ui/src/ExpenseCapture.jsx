@@ -67,6 +67,11 @@ const makeId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
+const pickMockReceipt = () => {
+  const randomIndex = Math.floor(Math.random() * mockReceipts.length)
+  return mockReceipts[randomIndex]
+}
+
 function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   const navigate = useNavigate()
   const [mode, setMode] = useState(MODES.SCAN)
@@ -77,6 +82,9 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   const [extractedSummary, setExtractedSummary] = useState(null)
   const [showReview, setShowReview] = useState(false)
   const [reviewData, setReviewData] = useState(null)
+  const [showCaptureOptions, setShowCaptureOptions] = useState(false)
+  const [showCameraOverlay, setShowCameraOverlay] = useState(false)
+  const fileInputRef = useRef(null)
   const extractionTimer = useRef(null)
 
   useEffect(() => {
@@ -105,34 +113,34 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     setExtractedSummary(null)
     setShowReview(false)
     setReviewData(null)
+    setShowCaptureOptions(false)
+    setShowCameraOverlay(false)
   }
 
-  const handleReceiptUpload = (event) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    setReceiptFileName(file.name)
-    setIsProcessing(true)
-    setStatus({
-      type: 'info',
-      message: 'Processing receipt. OCR extraction in progress…',
-    })
-
-    const randomIndex = Math.floor(Math.random() * mockReceipts.length)
-    const mockData = mockReceipts[randomIndex]
+  const startExtraction = (sampleData, fileLabel, infoMessage = 'Processing receipt. OCR extraction in progress...') => {
+    if (!sampleData) return
 
     if (extractionTimer.current) {
       window.clearTimeout(extractionTimer.current)
     }
 
+    setShowReview(false)
+    setReviewData(null)
+    setExtractedSummary(null)
+    setReceiptFileName(fileLabel)
+    setIsProcessing(true)
+    setStatus({
+      type: 'info',
+      message: infoMessage,
+    })
+
     extractionTimer.current = window.setTimeout(() => {
-      setFormData(mockData)
+      setFormData(sampleData)
       setExtractedSummary({
-        merchant: mockData.merchant,
-        amount: mockData.amount,
-        category: mockData.category,
+        merchant: sampleData.merchant,
+        amount: sampleData.amount,
+        category: sampleData.category,
       })
-      setShowReview(false)
       setIsProcessing(false)
       setStatus({
         type: 'success',
@@ -141,10 +149,38 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     }, 1800)
   }
 
+  const handleReceiptUpload = (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const sample = pickMockReceipt()
+    setShowCaptureOptions(false)
+    setShowCameraOverlay(false)
+    startExtraction(sample, file.name)
+    event.target.value = ''
+  }
+
   const handleInputChange = (event) => {
     const { name, value } = event.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     setShowReview(false)
+  }
+
+  const handleChooseUpload = () => {
+    setShowCaptureOptions(false)
+    fileInputRef.current?.click()
+  }
+
+  const handleChooseScan = () => {
+    setShowCaptureOptions(false)
+    setShowCameraOverlay(true)
+  }
+
+  const handleMockCapture = () => {
+    const sample = pickMockReceipt()
+    const fileLabel = `CameraCapture-${Date.now()}.jpg`
+    setShowCameraOverlay(false)
+    startExtraction(sample, fileLabel, 'Scanning receipt with camera...')
   }
 
   const handleSaveExpense = () => {
@@ -197,7 +233,57 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   }
 
   return (
-    <div className="app-shell">
+    <>
+      {showCaptureOptions && (
+        <div className="overlay" onClick={() => setShowCaptureOptions(false)}>
+          <div className="capture-modal" onClick={(event) => event.stopPropagation()}>
+            <h3>Select input method</h3>
+            <p className="modal-copy">Choose how you want to add the receipt.</p>
+            <button className="modal-button" type="button" onClick={handleChooseUpload}>
+              Upload from gallery
+            </button>
+            <button className="modal-button outline" type="button" onClick={handleChooseScan}>
+              Scan with camera
+            </button>
+            <button className="modal-cancel" type="button" onClick={() => setShowCaptureOptions(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showCameraOverlay && (
+        <div className="overlay" onClick={() => setShowCameraOverlay(false)}>
+          <div className="camera-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="camera-header">
+              <h3>Mock camera preview</h3>
+              <button
+                type="button"
+                className="camera-close"
+                onClick={() => setShowCameraOverlay(false)}
+                aria-label="Close camera"
+              >
+                ×
+              </button>
+            </div>
+            <div className="camera-frame">
+              <div className="camera-guides">
+                <span className="camera-hint">Align receipt within the guide</span>
+              </div>
+            </div>
+            <div className="camera-controls">
+              <button className="camera-button ghost" type="button" onClick={() => setShowCameraOverlay(false)}>
+                Cancel
+              </button>
+              <button className="camera-button primary" type="button" onClick={handleMockCapture}>
+                Capture receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="app-shell">
       <header className="app-header">
         <div className="header-top">
           <div className="brand">
@@ -255,10 +341,20 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
 
             {mode === MODES.SCAN && (
               <div className="scan-dropzone">
-                <label className="file-input">
-                  <input type="file" accept="image/*" onChange={handleReceiptUpload} />
-                  <span>Upload or snap receipt image</span>
-                </label>
+                <button
+                  type="button"
+                  className="capture-trigger"
+                  onClick={() => setShowCaptureOptions(true)}
+                >
+                  Upload or scan receipt image
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleReceiptUpload}
+                  className="hidden-input"
+                />
               </div>
             )}
 
@@ -407,7 +503,8 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
           </aside>
         )}
       </section>
-    </div>
+      </div>
+    </>
   )
 }
 
