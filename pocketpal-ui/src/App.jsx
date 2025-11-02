@@ -193,33 +193,6 @@ function App() {
     setExtractedSummary(null)
   }
 
-  const flowSteps = [
-    {
-      title: 'Capture Receipt',
-      description:
-        'Use camera or upload from gallery. The app queues the image and requests OCR processing.',
-      actor: 'User & System',
-    },
-    {
-      title: 'Extract & Suggest',
-      description:
-        'OCR pulls merchant, amount, and date. PocketPal suggests a category and payment method.',
-      actor: 'System',
-    },
-    {
-      title: 'Review & Edit',
-      description:
-        'User validates fields, corrects any inaccuracies, and adds notes for finance reviewers.',
-      actor: 'User',
-    },
-    {
-      title: 'Confirm & Save',
-      description:
-        'Save the expense, trigger confirmation toast, and update running totals instantly.',
-      actor: 'System',
-    },
-  ]
-
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -259,27 +232,6 @@ function App() {
 
       <section className="content-layout">
         <div className="primary-column">
-          <div className="card flow-card">
-            <div className="card-header">
-              <h2>User journey</h2>
-              <span className="card-subtitle">Maps to assignment use case C.2</span>
-            </div>
-            <ol className="flow-list">
-              {flowSteps.map((step, index) => (
-                <li key={step.title}>
-                  <div className="step-index">{index + 1}</div>
-                  <div className="step-details">
-                    <div className="step-header">
-                      <h3>{step.title}</h3>
-                      <span>{step.actor}</span>
-                    </div>
-                    <p>{step.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-
           <div className="card form-card">
             <div className="card-header">
               <h2>{mode === MODES.SCAN ? 'Receipt details' : 'Manual expense entry'}</h2>
