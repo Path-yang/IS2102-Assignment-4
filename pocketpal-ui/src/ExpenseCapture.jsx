@@ -173,14 +173,14 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     }
 
     setSavedExpenses((prev) => [expenseRecord, ...prev])
-    setStatus({
-      type: 'success',
-      message: 'Expense saved. You can now sync to the ledger or capture another expense.',
-    })
+
+    // Navigate to confirmation screen with expense data
+    navigate('/confirmation', { state: { expense: expenseRecord } })
 
     setFormData({ ...blankForm })
     setReceiptFileName('')
     setExtractedSummary(null)
+    setStatus(null)
   }
 
   const filteredExpenses = useMemo(() => {

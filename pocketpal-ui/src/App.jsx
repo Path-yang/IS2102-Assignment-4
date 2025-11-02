@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import ExpenseCapture from './ExpenseCapture'
 import ExpenseDetail from './ExpenseDetail'
+import ExpenseConfirmation from './ExpenseConfirmation'
 import './App.css'
 
 function App() {
@@ -16,6 +17,10 @@ function App() {
       <Route
         path="/expense/:id"
         element={<ExpenseDetail expenses={savedExpenses} />}
+      />
+      <Route
+        path="/confirmation"
+        element={<ExpenseConfirmation />}
       />
     </Routes>
   )
