@@ -75,6 +75,9 @@ function App() {
   const [savedExpenses, setSavedExpenses] = useState([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [extractedSummary, setExtractedSummary] = useState(null)
+  const [selectedExpense, setSelectedExpense] = useState(null)
+  const [filterCategory, setFilterCategory] = useState('')
+  const [filterMode, setFilterMode] = useState('')
   const extractionTimer = useRef(null)
 
   useEffect(() => {
@@ -179,6 +182,22 @@ function App() {
     setFormData({ ...blankForm })
     setReceiptFileName('')
     setExtractedSummary(null)
+  }
+
+  const filteredExpenses = useMemo(() => {
+    return savedExpenses.filter((expense) => {
+      if (filterCategory && expense.category !== filterCategory) return false
+      if (filterMode && expense.mode !== filterMode) return false
+      return true
+    })
+  }, [savedExpenses, filterCategory, filterMode])
+
+  const handleExpenseClick = (expense) => {
+    setSelectedExpense(expense)
+  }
+
+  const closeModal = () => {
+    setSelectedExpense(null)
   }
 
   return (
@@ -402,14 +421,35 @@ function App() {
               <h2>Captured expenses</h2>
               <span className="card-subtitle">Latest saved drafts</span>
             </div>
+
+            <div className="filter-controls">
+              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+                <option value="">All categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <select value={filterMode} onChange={(e) => setFilterMode(e.target.value)}>
+                <option value="">All modes</option>
+                <option value={MODES.SCAN}>Receipt scan</option>
+                <option value={MODES.MANUAL}>Manual</option>
+              </select>
+            </div>
+
             {savedExpenses.length === 0 ? (
               <div className="empty-state">
                 <p>No expenses saved yet. Entries appear here for quick review.</p>
               </div>
+            ) : filteredExpenses.length === 0 ? (
+              <div className="empty-state">
+                <p>No expenses match the selected filters.</p>
+              </div>
             ) : (
               <ul className="saved-list">
-                {savedExpenses.map((expense) => (
-                  <li key={expense.id}>
+                {filteredExpenses.map((expense) => (
+                  <li key={expense.id} onClick={() => handleExpenseClick(expense)} className="clickable-expense">
                     <div className="saved-top">
                       <strong>{expense.merchant}</strong>
                       <span>SGD {expense.amount}</span>
@@ -428,6 +468,63 @@ function App() {
           </div>
         </aside>
       </section>
+
+      {selectedExpense && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Expense Details</h2>
+              <button className="close-button" onClick={closeModal}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-row">
+                <span className="detail-label">Merchant</span>
+                <span className="detail-value">{selectedExpense.merchant}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Amount</span>
+                <span className="detail-value">SGD {selectedExpense.amount}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Date</span>
+                <span className="detail-value">{selectedExpense.date}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Category</span>
+                <span className="detail-value">{selectedExpense.category || 'Not specified'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Payment Method</span>
+                <span className="detail-value">{selectedExpense.paymentMethod || 'Not specified'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Entry Mode</span>
+                <span className="detail-value">
+                  <span className={`mode-pill mode-${selectedExpense.mode}`}>
+                    {selectedExpense.mode === MODES.SCAN ? 'Receipt scan' : 'Manual'}
+                  </span>
+                </span>
+              </div>
+              {selectedExpense.receiptFileName && (
+                <div className="detail-row">
+                  <span className="detail-label">Receipt File</span>
+                  <span className="detail-value">{selectedExpense.receiptFileName}</span>
+                </div>
+              )}
+              {selectedExpense.notes && (
+                <div className="detail-row">
+                  <span className="detail-label">Notes</span>
+                  <span className="detail-value">{selectedExpense.notes}</span>
+                </div>
+              )}
+              <div className="detail-row">
+                <span className="detail-label">Created</span>
+                <span className="detail-value">{new Date(selectedExpense.createdAt).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
