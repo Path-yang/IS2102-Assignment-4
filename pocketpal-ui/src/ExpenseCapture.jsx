@@ -195,6 +195,17 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     navigate(`/expense/${expense.id}`)
   }
 
+  const hasFormData = useMemo(() => {
+    return (
+      formData.merchant ||
+      formData.amount ||
+      formData.date ||
+      formData.category ||
+      formData.paymentMethod ||
+      formData.notes
+    )
+  }, [formData])
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -356,52 +367,54 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
         </div>
 
         <aside className="secondary-column">
-          <div className="card review-card">
-            <div className="card-header">
-              <h2>Review</h2>
-              <span className="card-subtitle">Current entry</span>
+          {hasFormData && (
+            <div className="card review-card">
+              <div className="card-header">
+                <h2>Review</h2>
+                <span className="card-subtitle">Current entry</span>
+              </div>
+              <dl className="review-details">
+                <div>
+                  <dt>Merchant</dt>
+                  <dd>{formData.merchant || '--'}</dd>
+                </div>
+                <div>
+                  <dt>Amount</dt>
+                  <dd>SGD {totals.amount}</dd>
+                </div>
+                <div>
+                  <dt>Total</dt>
+                  <dd>SGD {totals.total}</dd>
+                </div>
+                <div>
+                  <dt>Date</dt>
+                  <dd>{formData.date || '--'}</dd>
+                </div>
+                <div>
+                  <dt>Category</dt>
+                  <dd>{formData.category || 'Awaiting selection'}</dd>
+                </div>
+                <div>
+                  <dt>Payment method</dt>
+                  <dd>{formData.paymentMethod || 'Not provided'}</dd>
+                </div>
+                <div>
+                  <dt>Notes</dt>
+                  <dd>{formData.notes || 'Add context for approvers'}</dd>
+                </div>
+              </dl>
+              {mode === MODES.SCAN && extractedSummary && (
+                <div className="auto-insight">
+                  <h3>Auto-detected from receipt</h3>
+                  <ul>
+                    <li>Merchant: {extractedSummary.merchant}</li>
+                    <li>Amount: SGD {extractedSummary.amount}</li>
+                    <li>Suggested category: {extractedSummary.category}</li>
+                  </ul>
+                </div>
+              )}
             </div>
-            <dl className="review-details">
-              <div>
-                <dt>Merchant</dt>
-                <dd>{formData.merchant || '--'}</dd>
-              </div>
-              <div>
-                <dt>Amount</dt>
-                <dd>SGD {totals.amount}</dd>
-              </div>
-              <div>
-                <dt>Total</dt>
-                <dd>SGD {totals.total}</dd>
-              </div>
-              <div>
-                <dt>Date</dt>
-                <dd>{formData.date || '--'}</dd>
-              </div>
-              <div>
-                <dt>Category</dt>
-                <dd>{formData.category || 'Awaiting selection'}</dd>
-              </div>
-              <div>
-                <dt>Payment method</dt>
-                <dd>{formData.paymentMethod || 'Not provided'}</dd>
-              </div>
-              <div>
-                <dt>Notes</dt>
-                <dd>{formData.notes || 'Add context for approvers'}</dd>
-              </div>
-            </dl>
-            {mode === MODES.SCAN && extractedSummary && (
-              <div className="auto-insight">
-                <h3>Auto-detected from receipt</h3>
-                <ul>
-                  <li>Merchant: {extractedSummary.merchant}</li>
-                  <li>Amount: SGD {extractedSummary.amount}</li>
-                  <li>Suggested category: {extractedSummary.category}</li>
-                </ul>
-              </div>
-            )}
-          </div>
+          )}
 
           <div className="card saved-card">
             <div className="card-header">
