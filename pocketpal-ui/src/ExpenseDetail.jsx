@@ -1,5 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import './ExpenseDetail.css'
+import detailStyles from './ExpenseDetail.css?inline'
+import { injectStyles } from './utils/injectStyles'
+
+injectStyles('pocketpal-detail-styles', detailStyles)
 
 const MODES = {
   SCAN: 'scan',

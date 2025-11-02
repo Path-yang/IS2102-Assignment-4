@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './ExpenseHistory.css'
+import historyStyles from './ExpenseHistory.css?inline'
+import { injectStyles } from './utils/injectStyles'
+
+injectStyles('pocketpal-history-styles', historyStyles)
 
 const MODES = {
   SCAN: 'scan',

@@ -1,6 +1,9 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import './ExpenseConfirmation.css'
+import confirmationStyles from './ExpenseConfirmation.css?inline'
+import { injectStyles } from './utils/injectStyles'
+
+injectStyles('pocketpal-confirmation-styles', confirmationStyles)
 
 const MODES = {
   SCAN: 'scan',

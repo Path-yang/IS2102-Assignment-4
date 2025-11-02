@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './App.css'
 
 const MODES = {
   SCAN: 'scan',

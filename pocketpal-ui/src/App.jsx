@@ -4,7 +4,10 @@ import ExpenseCapture from './ExpenseCapture'
 import ExpenseDetail from './ExpenseDetail'
 import ExpenseConfirmation from './ExpenseConfirmation'
 import ExpenseHistory from './ExpenseHistory'
-import './App.css'
+import appStyles from './App.css?inline'
+import { injectStyles } from './utils/injectStyles'
+
+injectStyles('pocketpal-app-styles', appStyles)
 
 function App() {
   const [savedExpenses, setSavedExpenses] = useState([])
