@@ -175,17 +175,23 @@
 }
 
 .primary-column {
-  flex: 1 1 0;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 .secondary-column {
-  width: clamp(280px, 30vw, 360px);
+  flex: 0 0 auto;
+  width: 360px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.secondary-column:empty {
+  display: none;
 }
 
 .card {
