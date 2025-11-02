@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import ExpenseCapture from './ExpenseCapture'
 import ExpenseDetail from './ExpenseDetail'
 import ExpenseConfirmation from './ExpenseConfirmation'
+import ExpenseHistory from './ExpenseHistory'
 import './App.css'
 
 function App() {
@@ -13,6 +14,10 @@ function App() {
       <Route
         path="/"
         element={<ExpenseCapture savedExpenses={savedExpenses} setSavedExpenses={setSavedExpenses} />}
+      />
+      <Route
+        path="/history"
+        element={<ExpenseHistory expenses={savedExpenses} />}
       />
       <Route
         path="/expense/:id"

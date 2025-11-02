@@ -76,8 +76,6 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   const [status, setStatus] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [extractedSummary, setExtractedSummary] = useState(null)
-  const [filterCategory, setFilterCategory] = useState('')
-  const [filterMode, setFilterMode] = useState('')
   const extractionTimer = useRef(null)
 
   useEffect(() => {
@@ -183,18 +181,6 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     setStatus(null)
   }
 
-  const filteredExpenses = useMemo(() => {
-    return savedExpenses.filter((expense) => {
-      if (filterCategory && expense.category !== filterCategory) return false
-      if (filterMode && expense.mode !== filterMode) return false
-      return true
-    })
-  }, [savedExpenses, filterCategory, filterMode])
-
-  const handleExpenseClick = (expense) => {
-    navigate(`/expense/${expense.id}`)
-  }
-
   const hasFormData = useMemo(() => {
     return (
       formData.merchant ||
@@ -209,9 +195,17 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div className="brand">
-          <span className="brand-mark">PocketPal</span>
-          <h1>Capture Expense</h1>
+        <div className="header-top">
+          <div className="brand">
+            <span className="brand-mark">PocketPal</span>
+            <h1>Capture Expense</h1>
+          </div>
+          <button className="history-button" onClick={() => navigate('/history')}>
+            <span>Expense History</span>
+            {savedExpenses.length > 0 && (
+              <span className="expense-count">{savedExpenses.length}</span>
+            )}
+          </button>
         </div>
         <p className="header-copy">
           Prototype interface for the capture expense feature. Toggle between receipt scanning and
@@ -415,57 +409,6 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
               )}
             </div>
           )}
-
-          <div className="card saved-card">
-            <div className="card-header">
-              <h2>Captured expenses</h2>
-              <span className="card-subtitle">Latest saved drafts</span>
-            </div>
-
-            <div className="filter-controls">
-              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-                <option value="">All categories</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-              <select value={filterMode} onChange={(e) => setFilterMode(e.target.value)}>
-                <option value="">All modes</option>
-                <option value={MODES.SCAN}>Receipt scan</option>
-                <option value={MODES.MANUAL}>Manual</option>
-              </select>
-            </div>
-
-            {savedExpenses.length === 0 ? (
-              <div className="empty-state">
-                <p>No expenses saved yet. Entries appear here for quick review.</p>
-              </div>
-            ) : filteredExpenses.length === 0 ? (
-              <div className="empty-state">
-                <p>No expenses match the selected filters.</p>
-              </div>
-            ) : (
-              <ul className="saved-list">
-                {filteredExpenses.map((expense) => (
-                  <li key={expense.id} onClick={() => handleExpenseClick(expense)} className="clickable-expense">
-                    <div className="saved-top">
-                      <strong>{expense.merchant}</strong>
-                      <span>SGD {expense.amount}</span>
-                    </div>
-                    <div className="saved-meta">
-                      <span className={`mode-pill mode-${expense.mode}`}>
-                        {expense.mode === MODES.SCAN ? 'Receipt scan' : 'Manual'}
-                      </span>
-                      <span>{expense.date}</span>
-                      {expense.category && <span>{expense.category}</span>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
         </aside>
       </section>
     </div>
