@@ -22,8 +22,11 @@ npm run build
 ```
 This verifies the app is ready for deployment and outputs static assets to `dist/`.
 
-## Feature notes
+## Features
+
 - Dual paths for capturing expenses: simulated receipt OCR with auto-filled fields, or manual entry for cash/unreadable receipts.
 - Review panel keeps totals, categories, and notes visible while editing.
 - Saved list mimics draft expenses so you can showcase end-to-end confirmation.
 - Layout is responsive for desktop and mobile to match the assignment's wireframe-to-screen expectation.
+- Dedicated expense history page with filtering capabilities.
+- Confirmation screen after saving expenses.
