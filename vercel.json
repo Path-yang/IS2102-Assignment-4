@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd pocketpal-ui && npm install && npm run build",
+  "outputDirectory": "pocketpal-ui/dist",
+  "installCommand": "cd pocketpal-ui && npm install"
+}
