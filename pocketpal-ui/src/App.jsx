@@ -9,7 +9,6 @@ const MODES = {
 const blankForm = {
   merchant: '',
   amount: '',
-  tax: '',
   date: '',
   category: '',
   paymentMethod: '',
@@ -20,7 +19,6 @@ const mockReceipts = [
   {
     merchant: 'Everyday Grocer',
     amount: '42.70',
-    tax: '2.70',
     date: new Date().toISOString().slice(0, 10),
     category: 'Groceries',
     paymentMethod: 'Visa **** 2189',
@@ -29,7 +27,6 @@ const mockReceipts = [
   {
     merchant: 'Metro Taxi',
     amount: '18.40',
-    tax: '0.00',
     date: new Date(Date.now() - 86400000).toISOString().slice(0, 10),
     category: 'Transport',
     paymentMethod: 'Corporate Card **** 0045',
@@ -38,7 +35,6 @@ const mockReceipts = [
   {
     merchant: 'Cafe Solstice',
     amount: '12.80',
-    tax: '0.80',
     date: new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10),
     category: 'Food & Beverage',
     paymentMethod: 'Mastercard **** 5573',
@@ -91,15 +87,12 @@ function App() {
 
   const totals = useMemo(() => {
     const amount = Number.parseFloat(formData.amount) || 0
-    const tax = Number.parseFloat(formData.tax) || 0
-    const total = tax > 0 && tax < amount ? amount + tax : amount
 
     return {
       amount: amount.toFixed(2),
-      tax: tax ? tax.toFixed(2) : '0.00',
-      total: total.toFixed(2),
+      total: amount.toFixed(2),
     }
-  }, [formData.amount, formData.tax])
+  }, [formData.amount])
 
   const handleModeChange = (nextMode) => {
     if (nextMode === mode) return
@@ -168,10 +161,6 @@ function App() {
       return
     }
 
-    const normalizedTax = formData.tax
-      ? Number.parseFloat(formData.tax)
-      : 0
-
     const expenseRecord = {
       id: makeId(),
       mode,
@@ -179,7 +168,6 @@ function App() {
       receiptFileName,
       ...formData,
       amount: normalizedAmount.toFixed(2),
-      tax: normalizedTax ? normalizedTax.toFixed(2) : '',
     }
 
     setSavedExpenses((prev) => [expenseRecord, ...prev])
@@ -305,18 +293,6 @@ function App() {
               </label>
 
               <label className="field">
-                <span>Tax</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="tax"
-                  placeholder="0.00"
-                  value={formData.tax}
-                  onChange={handleInputChange}
-                />
-              </label>
-
-              <label className="field">
                 <span>Date *</span>
                 <input
                   type="date"
@@ -389,11 +365,7 @@ function App() {
                 <dd>SGD {totals.amount}</dd>
               </div>
               <div>
-                <dt>Tax</dt>
-                <dd>SGD {totals.tax}</dd>
-              </div>
-              <div>
-                <dt>Posting total</dt>
+                <dt>Total</dt>
                 <dd>SGD {totals.total}</dd>
               </div>
               <div>
