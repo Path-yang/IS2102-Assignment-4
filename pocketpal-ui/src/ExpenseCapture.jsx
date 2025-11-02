@@ -60,6 +60,39 @@ const paymentMethods = [
   'Reimbursable Wallet',
 ]
 
+const errorScenarios = [
+  {
+    id: 'camera',
+    title: 'Camera access denied',
+    summary: 'System prompts user to grant permission or choose an image from the gallery.',
+    cta: 'Request camera access',
+  },
+  {
+    id: 'ocr',
+    title: 'Unreadable receipt',
+    summary: 'OCR fails to extract data; system asks user to enter details manually.',
+    cta: 'Switch to manual entry',
+  },
+  {
+    id: 'network',
+    title: 'Network failure',
+    summary: 'Image queued locally; system retries upload when connection is restored.',
+    cta: 'Retry upload',
+  },
+  {
+    id: 'validation',
+    title: 'Validation error',
+    summary: 'Missing or invalid amount/date; system highlights the error for correction.',
+    cta: 'Fix highlighted fields',
+  },
+  {
+    id: 'save',
+    title: 'Save failure',
+    summary: 'Database error; system shows “Failed to save expense” and retains draft.',
+    cta: 'Try again later',
+  },
+]
+
 const makeId = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID()
@@ -84,6 +117,7 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
   const [reviewData, setReviewData] = useState(null)
   const [showCaptureOptions, setShowCaptureOptions] = useState(false)
   const [showCameraOverlay, setShowCameraOverlay] = useState(false)
+  const [activeError, setActiveError] = useState(null)
   const fileInputRef = useRef(null)
   const extractionTimer = useRef(null)
 
@@ -115,6 +149,7 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     setReviewData(null)
     setShowCaptureOptions(false)
     setShowCameraOverlay(false)
+    setActiveError(null)
   }
 
   const startExtraction = (sampleData, fileLabel, infoMessage = 'Processing receipt. OCR extraction in progress...') => {
@@ -129,6 +164,7 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     setExtractedSummary(null)
     setReceiptFileName(fileLabel)
     setIsProcessing(true)
+    setActiveError(null)
     setStatus({
       type: 'info',
       message: infoMessage,
@@ -183,6 +219,19 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     startExtraction(sample, fileLabel, 'Scanning receipt with camera...')
   }
 
+  const handleTriggerError = (scenario) => {
+    setShowCaptureOptions(false)
+    setShowCameraOverlay(false)
+    setActiveError({
+      ...scenario,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    })
+  }
+
+  const handleDismissError = () => {
+    setActiveError(null)
+  }
+
   const handleSaveExpense = () => {
     if (!formData.merchant.trim() || !formData.date) {
       setStatus({
@@ -230,6 +279,7 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
     setReviewData(null)
     setShowReview(false)
     setStatus(null)
+    setActiveError(null)
   }
 
   return (
@@ -277,6 +327,37 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
               </button>
               <button className="camera-button primary" type="button" onClick={handleMockCapture}>
                 Capture receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeError && (
+        <div className="overlay" onClick={handleDismissError}>
+          <div className="error-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="error-modal-header">
+              <span className="error-indicator" aria-hidden="true">!</span>
+              <div className="error-heading">
+                <h3>{activeError.title}</h3>
+                <span className="error-timestamp">{activeError.timestamp}</span>
+              </div>
+              <button
+                type="button"
+                className="error-close"
+                onClick={handleDismissError}
+                aria-label="Dismiss error"
+              >
+                ×
+              </button>
+            </div>
+            <p className="error-modal-summary">{activeError.summary}</p>
+            <div className="error-modal-actions">
+              <button type="button" className="error-action" onClick={handleDismissError}>
+                {activeError.cta}
+              </button>
+              <button type="button" className="error-secondary" onClick={handleDismissError}>
+                Dismiss
               </button>
             </div>
           </div>
@@ -503,8 +584,33 @@ function ExpenseCapture({ savedExpenses, setSavedExpenses }) {
           </aside>
         )}
       </section>
-      </div>
-    </>
+
+      <section className="error-library">
+        <div className="card error-card">
+          <div className="card-header">
+            <h2>Simulated error states</h2>
+            <span className="card-subtitle">Tap to preview system responses</span>
+          </div>
+          <div className="error-grid">
+            {errorScenarios.map((scenario) => (
+              <button
+                key={scenario.id}
+                type="button"
+                className="error-chip"
+                onClick={() => handleTriggerError(scenario)}
+              >
+                <strong>{scenario.title}</strong>
+                <span>{scenario.summary}</span>
+              </button>
+            ))}
+          </div>
+          <p className="error-hint">
+            Each option opens a fake alert so you can document exception handling in the mockup.
+          </p>
+        </div>
+      </section>
+    </div>
+  </>
   )
 }
 

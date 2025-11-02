@@ -744,6 +744,158 @@
   color: #112668;
 }
 
+.error-modal {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.8rem;
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  box-shadow: 0 30px 60px rgba(140, 26, 26, 0.28);
+  border: 1px solid rgba(206, 85, 85, 0.3);
+}
+
+.error-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.error-indicator {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff8080, #ff4f4f);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(255, 79, 79, 0.25);
+}
+
+.error-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.error-heading h3 {
+  margin: 0;
+  color: #3a0a0a;
+}
+
+.error-timestamp {
+  font-size: 0.8rem;
+  color: #905a5a;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.error-close {
+  margin-left: auto;
+  background: rgba(59, 12, 12, 0.08);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  color: #3a0a0a;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.error-modal-summary {
+  margin: 0;
+  color: #502525;
+  line-height: 1.5;
+}
+
+.error-modal-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.error-action,
+.error-secondary {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.error-action {
+  border: none;
+  background: linear-gradient(135deg, #ff5f5f, #ff3636);
+  color: #ffffff;
+  box-shadow: 0 12px 26px rgba(255, 79, 79, 0.32);
+}
+
+.error-secondary {
+  border: 1px solid rgba(130, 58, 58, 0.35);
+  background: #fff3f3;
+  color: #6f2c2c;
+}
+
+.error-library {
+  margin-top: 2rem;
+}
+
+.error-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.error-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.error-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(101, 122, 163, 0.25);
+  background: rgba(246, 248, 255, 0.9);
+  cursor: pointer;
+  text-align: left;
+  transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.error-chip strong {
+  font-size: 0.92rem;
+  color: #12254b;
+}
+
+.error-chip span {
+  font-size: 0.85rem;
+  color: #4a5f80;
+}
+
+.error-chip:hover {
+  border-color: rgba(47, 73, 165, 0.5);
+  box-shadow: 0 18px 32px rgba(47, 73, 165, 0.18);
+  transform: translateY(-1px);
+}
+
+.error-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #607299;
+  text-align: right;
+}
+
 @media (max-width: 960px) {
   .content-layout {
     flex-direction: column;
